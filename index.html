@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drift Exchange</title>
+
+  <style>
+    :root{
+      --bg0:#07060b;
+      --bg1:#0b0a12;
+      --panel: rgba(16, 15, 24, .72);
+      --panel2: rgba(16, 15, 24, .52);
+
+      --text:#fbf7ea;
+      --muted: rgba(251,247,234,.74);
+
+      --goldA:#fff2b2;
+      --goldB:#ffd166;
+      --goldC:#d4af37;
+      --goldD:#9f7928;
+
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --r16: 16px;
+      --r22: 22px;
+      --r28: 28px;
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% 0%, rgba(255,214,102,.12), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(212,175,55,.12), transparent 55%),
+        radial-gradient(700px 500px at 55% 95%, rgba(159,121,40,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    .grain{
+      position:fixed; inset:0; pointer-events:none; opacity:.18;
+      background-image:
+        radial-gradient(#ffffff 1px, transparent 1px),
+        radial-gradient(#ffffff 1px, transparent 1px),
+        radial-gradient(#ffffff 1px, transparent 1px);
+      background-size: 58px 58px, 92px 92px, 140px 140px;
+      background-position: 0 0, 10px 22px, 18px 12px;
+      filter: blur(.2px);
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .container{ width:min(1100px, 92vw); margin:0 auto; }
+
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(11,10,18,.86), rgba(11,10,18,.45));
+      border-bottom: 1px solid rgba(255,214,102,.14);
+    }
+    .topbar{
+      padding: 14px 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .brandText{
+      font-weight: 800;
+      letter-spacing: .25px;
+      font-size: 25px;
+      user-select:none;
+      text-align:center;
+      opacity:.95;
+    }
+    .goldText{
+      background: linear-gradient(90deg, var(--goldA), var(--goldB), var(--goldC));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+
+    section{ padding: 54px 0; }
+    .hero{ padding: 58px 0 40px; }
+
+    .heroWrap{
+      border-radius: var(--r28);
+      border: 1px solid rgba(255,214,102,.16);
+      background: linear-gradient(180deg, rgba(16,15,24,.72), rgba(16,15,24,.40));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .heroWrap:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(650px 260px at 15% 10%, rgba(255,242,178,.14), transparent 60%),
+        radial-gradient(520px 260px at 88% 10%, rgba(212,175,55,.12), transparent 55%);
+      pointer-events:none;
+    }
+    .heroTop{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      padding: 26px;
+      align-items:stretch;
+    }
+    .heroTitle{
+      margin:0 0 10px;
+      font-size: clamp(28px, 4.4vw, 46px);
+      line-height:1.06;
+      letter-spacing:.2px;
+    }
+    .heroP{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height:1.6;
+      max-width: 62ch;
+    }
+
+    .btnRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(255,214,102,.22);
+      background: rgba(16,15,24,.50);
+      color: rgba(251,247,234,.92);
+      cursor:pointer;
+      transition: .18s ease;
+      user-select:none;
+      font-size: 13px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,214,102,.35); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(255,242,178,.18), rgba(212,175,55,.10));
+      border-color: rgba(255,214,102,.35);
+    }
+
+    .dot{
+      width:10px; height:10px; border-radius: 999px;
+      background: linear-gradient(180deg, var(--goldA), var(--goldC));
+      box-shadow: 0 0 16px rgba(212,175,55,.30);
+      display:inline-block;
+    }
+
+    .tagRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .tag{
+      display:inline-flex; align-items:center; gap:9px;
+      padding:10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,214,102,.20);
+      background: rgba(7,6,11,.20);
+      color: rgba(251,247,234,.88);
+      font-size: 13px;
+    }
+
+    .heroPanel{
+      border-radius: var(--r22);
+      border: 1px solid rgba(255,214,102,.16);
+      background: rgba(7,6,11,.20);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .heroPanel h3{ margin:0; font-size: 14px; letter-spacing:.2px; }
+    .heroPanel p{ margin:0; color: var(--muted); font-size: 13px; line-height:1.55; }
+
+    .rail{
+      position:relative;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      padding: 0 26px 22px;
+    }
+    .tile{
+      grid-column: span 3;
+      border-radius: var(--r16);
+      border: 1px solid rgba(255,214,102,.14);
+      background: rgba(7,6,11,.16);
+      padding: 14px;
+      min-height: 92px;
+    }
+    .tile b{
+      display:block;
+      font-size: 20px;
+      margin-bottom: 6px;
+      background: linear-gradient(90deg, var(--goldA), var(--goldC));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .tile span{ color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+
+    .sectionTitle{ margin: 0 0 10px; font-size: 22px; letter-spacing:.2px; }
+    .sectionP{ margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height:1.6; max-width: 75ch; }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .card{
+      grid-column: span 6;
+      border-radius: var(--r22);
+      border: 1px solid rgba(255,214,102,.16);
+      background: linear-gradient(180deg, var(--panel), var(--panel2));
+      box-shadow: 0 14px 44px rgba(0,0,0,.40);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(420px 150px at 12% 0%, rgba(255,242,178,.11), transparent 60%);
+      pointer-events:none;
+    }
+    .card h3{
+      position:relative;
+      margin:0 0 8px;
+      font-size: 15px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .badge{
+      position:relative;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,214,102,.22);
+      background: rgba(7,6,11,.18);
+      font-size: 12px;
+      white-space:nowrap;
+      color: rgba(251,247,234,.92);
+    }
+    .card p{ position:relative; margin:0; color: var(--muted); font-size: 13.5px; line-height:1.55; }
+
+    .miniRow{ margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap; position:relative; }
+    .miniPill{
+      display:inline-flex; align-items:center; gap:9px;
+      padding: 9px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,214,102,.18);
+      background: rgba(7,6,11,.16);
+      font-size: 12.5px;
+      color: rgba(251,247,234,.86);
+    }
+
+    footer{
+      padding: 36px 0 48px;
+      border-top: 1px solid rgba(255,214,102,.12);
+      background: linear-gradient(180deg, rgba(11,10,18,.25), rgba(11,10,18,.60));
+    }
+    .foot{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 18px;
+      flex-wrap:wrap;
+    }
+    .footNote{ color: var(--muted); font-size: 13px; line-height:1.55; max-width: 70ch; }
+
+    @media (max-width: 900px){
+      .heroTop{ grid-template-columns: 1fr; }
+      .tile{ grid-column: span 6; }
+    }
+    @media (max-width: 760px){
+      .card{ grid-column: span 12; }
+      .tile{ grid-column: span 12; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <header>
+    <div class="container">
+      <div class="topbar">
+        <div class="brandText">Drift <span class="goldText">Exchange</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="heroWrap">
+          <div class="heroTop">
+            <div style="position:relative;">
+              <h2 class="heroTitle">Trade smarter with <span class="goldText">Drift</span>.</h2>
+              <p class="heroP">
+                Only these buttons are shown. Team button is right after View Rates.
+              </p>
+
+              <div class="btnRow">
+                <button class="btn primary" data-go="community">Join Community</button>
+                <button class="btn" data-go="rates">View Rates</button>
+                <button class="btn primary" data-go="team"><span class="dot"></span>Team</button>
+              </div>
+
+              <div class="tagRow">
+                <span class="tag"><span class="dot"></span>USDT / LTC support</span>
+                <span class="tag"><span class="dot"></span>Transparent pricing</span>
+                <span class="tag"><span class="dot"></span>Support-first flow</span>
+              </div>
+            </div>
+
+            <div class="heroPanel">
+              <h3>What Drift Exchange focuses on</h3>
+              <p>Clear rate cards, simple rules, and fast navigation between sections.</p>
+              <div class="miniRow">
+                <span class="miniPill"><span class="dot"></span>INR → Crypto</span>
+                <span class="miniPill"><span class="dot"></span>Crypto → Crypto</span>
+                <span class="miniPill"><span class="dot"></span>Crypto ↔ PayPal</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rail">
+            <div class="tile"><b>10K+</b><span>Total exchanges (sample)</span></div>
+            <div class="tile"><b>2.5K+</b><span>Active users (sample)</span></div>
+            <div class="tile"><b>2–20 min</b><span>Response time (sample)</span></div>
+            <div class="tile"><b>99.9%</b><span>Success rate (sample)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rates">
+      <div class="container">
+        <h2 class="sectionTitle">Exchange Rates</h2>
+        <p class="sectionP">Replace the sample rates with your real prices/fees anytime.</p>
+
+        <div class="cards">
+          <div class="card">
+            <h3>I2C (INR → Crypto) <span class="badge">₹97 (sample)</span></h3>
+            <p>Premium path with verification checks and guided steps.</p>
+            <div class="miniRow">
+              <span class="miniPill"><span class="dot"></span>Instant</span>
+              <span class="miniPill"><span class="dot"></span>Secure</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>C2C (Crypto → Crypto) <span class="badge">2.5% (sample)</span></h3>
+            <p>Fast transfers for common pairs with upfront fees.</p>
+            <div class="miniRow">
+              <span class="miniPill"><span class="dot"></span>Min: $1 (sample)</span>
+              <span class="miniPill"><span class="dot"></span>Quick</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>P2CC (PayPal → Crypto) <span class="badge">10% (sample)</span></h3>
+            <p>Higher-risk rail with stronger checks and manual review.</p>
+            <div class="miniRow">
+              <span class="miniPill"><span class="dot"></span>Receipt</span>
+              <span class="miniPill"><span class="dot"></span>Manual</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>C2PP (Crypto → PayPal) <span class="badge">2% (sample)</span></h3>
+            <p>Cash-out style flow: confirm → verify → release.</p>
+            <div class="miniRow">
+              <span class="miniPill"><span class="dot"></span>Any amount</span>
+              <span class="miniPill"><span class="dot"></span>Fast</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team">
+      <div class="container">
+        <h2 class="sectionTitle">Team</h2>
+        <p class="sectionP">Add your real team members, roles, and working hours here.</p>
+
+        <div class="cards">
+          <div class="card">
+            <h3>Support Lead <span class="badge">Add name</span></h3>
+            <p>Escalations, disputes, and high-value transfers.</p>
+          </div>
+          <div class="card">
+            <h3>Operations <span class="badge">Add name</span></h3>
+            <p>Rates, safety checks, and policy updates.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="community">
+      <div class="container">
+        <h2 class="sectionTitle">Community</h2>
+        <p class="sectionP">Replace the links below with your real Discord / Telegram / YouTube links.</p>
+
+        <div class="cards">
+          <div class="card">
+            <h3>Discord <span class="badge">Primary</span></h3>
+            <p>Main server for support and updates.</p>
+            <div class="miniRow">
+              <a class="btn primary" href="YOUR_DISCORD_LINK_HERE" target="_blank" rel="noopener">Open Discord</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Telegram <span class="badge">Backup</span></h3>
+            <p>Backup channel for quick support.</p>
+            <div class="miniRow">
+              <a class="btn primary" href="YOUR_TELEGRAM_LINK_HERE" target="_blank" rel="noopener">Open Telegram</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>YouTube <span class="badge">Updates</span></h3>
+            <p>Tutorials, announcements, and proofs (optional).</p>
+            <div class="miniRow">
+              <a class="btn primary" href="YOUR_YOUTUBE_LINK_HERE" target="_blank" rel="noopener">Open YouTube</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Quick tip <span class="badge">Safety</span></h3>
+            <p>Keep official links only here to avoid fake accounts and impersonation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="foot">
+        <div>
+          <div style="font-weight:800; letter-spacing:.2px;">
+            Drift <span class="goldText">Exchange</span>
+          </div>
+          <div class="footNote">© <span id="year"></span></div>
+        </div>
+
+        <div class="footNote">
+          Single-file template. Replace sample rates and add your official community links.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll using scrollIntoView options. [web:34]
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.querySelectorAll("[data-go]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        scrollToId(btn.getAttribute("data-go"));
+      });
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+  </html>
+  
